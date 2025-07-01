@@ -1,8 +1,8 @@
 package comunicacaoSocket;
 
 import java.io.BufferedInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -14,10 +14,12 @@ public class ComunicacaoSocketServer extends ComunicacaoBase {
 	private ServerSocket serverSocket;
 	private Socket clientSocket;
 	private int porta;
+	private boolean escreverEmByte;
 
-	public ComunicacaoSocketServer(ComunicacaoUI ui, int porta) {
+	public ComunicacaoSocketServer(ComunicacaoUI ui, int porta, boolean escreverEmByte) {
 		super(ui);
 		this.porta = porta;
+		this.escreverEmByte = escreverEmByte;
 	}
 
 	@Override
@@ -50,10 +52,17 @@ public class ComunicacaoSocketServer extends ComunicacaoBase {
 	@Override
 	public void enviar(String mensagem) throws Exception {
 		if (clientSocket != null && clientSocket.isConnected()) {
-			PrintWriter writer = new PrintWriter(clientSocket.getOutputStream(), true);
-			writer.write(mensagem);
-			writer.flush();
-			ui.escreverPane("LIS: " + mensagem, false);
+			DataOutputStream os = new DataOutputStream(clientSocket.getOutputStream());
+			
+			if (this.escreverEmByte) {
+				os.write(mensagem.getBytes());
+			} else {
+				os.writeUTF(mensagem);
+			}
+			
+			os.flush();
+			
+			ui.escreverPane("LIS:" + mensagem, false);
 		} else {
 			throw new Exception("Nenhum cliente conectado.");
 		}
@@ -76,6 +85,7 @@ public class ComunicacaoSocketServer extends ComunicacaoBase {
 	                    }
 	                    Thread.sleep(100);
 					} catch (IOException | InterruptedException e) {
+						Thread.currentThread().interrupt();
 						e.printStackTrace();
 					}
 				}

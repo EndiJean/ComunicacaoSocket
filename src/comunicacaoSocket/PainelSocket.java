@@ -53,19 +53,19 @@ public class PainelSocket extends JPanel {
         add(componente, gbc);
     }
 
-    public void iniciarComunicacaoSingle() {
+    public void iniciarComunicacaoSingle(boolean escreverEmByte) {
     	ComunicacaoUI ui = new ComunicacaoUI("Comunicação Socket Single");
     	ui.setVisible(true);
     	
-    	Comunicacao socketSingle = new ComunicacaoSocketSingle(ui, campoSocketIp.getText(), Integer.parseInt(campoSocketPorta.getText()));
+    	Comunicacao socketSingle = new ComunicacaoSocketSingle(ui, campoSocketIp.getText(), Integer.parseInt(campoSocketPorta.getText()), escreverEmByte);
     	ui.setComunicacao(socketSingle);
     }
 
-    public void iniciarComunicacaoServer() {
+    public void iniciarComunicacaoServer(boolean escreverEmByte) {
     	ComunicacaoUI ui = new ComunicacaoUI("Comunicação Socket Server");
     	ui.setVisible(true);
     	
-    	Comunicacao socketServer = new ComunicacaoSocketServer(ui, Integer.parseInt(campoSocketPorta.getText()));
+    	Comunicacao socketServer = new ComunicacaoSocketServer(ui, Integer.parseInt(campoSocketPorta.getText()), escreverEmByte);
     	ui.setComunicacao(socketServer);
     }
 }

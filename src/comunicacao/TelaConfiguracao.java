@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -27,6 +28,8 @@ public class TelaConfiguracao extends JFrame {
     private PainelSocket painelSocket;
     
     private JButton botaoConectar;
+    
+    private JCheckBox checkEscreverEmBytes;
 
     public TelaConfiguracao() {
         setTitle("Configuração de Comunicação");
@@ -52,6 +55,8 @@ public class TelaConfiguracao extends JFrame {
 
         botaoConectar = new JButton("Conectar");
         botaoConectar.addActionListener(new BotaoConectarListener());
+        
+        checkEscreverEmBytes = new JCheckBox("Escrever em bytes");
     }
 
     private void configurarLayout() {
@@ -84,12 +89,17 @@ public class TelaConfiguracao extends JFrame {
         gbc.gridwidth = 1;
         add(botaoConectar, gbc);
 
+        gbc.gridx = 2;
+        gbc.gridy = 2;
+        add(checkEscreverEmBytes, gbc);
+
         alternarVisibilidadePainel();
     }
 
     private void alternarVisibilidadePainel() {
         String tipoSelecionado = (String) comboTipoComunicacao.getSelectedItem();
         painelSerial.setVisible(SERIAL.equals(tipoSelecionado));
+        checkEscreverEmBytes.setVisible(!SERIAL.equals(tipoSelecionado));
         painelSocket.setVisible(isSocket(tipoSelecionado));
     }
 
@@ -109,9 +119,9 @@ public class TelaConfiguracao extends JFrame {
             if (SERIAL.equals(tipoSelecionado)) {
                 painelSerial.iniciarComunicacao();
             } else if (SOCKET_SINGLE.equals(tipoSelecionado)) {
-                painelSocket.iniciarComunicacaoSingle();
+                painelSocket.iniciarComunicacaoSingle(checkEscreverEmBytes.isSelected());
             } else if (SOCKET_SERVER.equals(tipoSelecionado)) {
-            	painelSocket.iniciarComunicacaoServer();
+            	painelSocket.iniciarComunicacaoServer(checkEscreverEmBytes.isSelected());
             }
         }
     }

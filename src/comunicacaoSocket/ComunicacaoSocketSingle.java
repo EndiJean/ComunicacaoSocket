@@ -1,8 +1,8 @@
 package comunicacaoSocket;
 
 import java.io.BufferedInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.Socket;
 
 import comunicacao.ComunicacaoBase;
@@ -13,11 +13,13 @@ public class ComunicacaoSocketSingle extends ComunicacaoBase {
 	private Socket socket;
 	private String ip;
 	private int porta;
+	private boolean escreverEmByte;
 
-	public ComunicacaoSocketSingle(ComunicacaoUI ui, String ip, int porta) {
+	public ComunicacaoSocketSingle(ComunicacaoUI ui, String ip, int porta, boolean escreverEmByte) {
 		super(ui);
 		this.ip = ip;
 		this.porta = porta;
+		this.escreverEmByte = escreverEmByte;
 	}
 
 	@Override
@@ -37,10 +39,15 @@ public class ComunicacaoSocketSingle extends ComunicacaoBase {
 	@Override
 	public void enviar(String mensagem) throws Exception {
 		if (socket != null && socket.isConnected()) {
-			PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
-			writer.write(mensagem);
-			writer.flush();
-			ui.escreverPane("LIS: " + mensagem, false);
+			DataOutputStream os = new DataOutputStream(socket.getOutputStream());
+			
+			if (this.escreverEmByte) {
+				os.write(mensagem.getBytes());
+			} else {
+				os.writeUTF(mensagem);
+			}
+			os.flush();
+			ui.escreverPane("LIS:" + mensagem, false);
 		} else {
 			throw new Exception("Socket não está conectado.");
 		}
@@ -63,6 +70,7 @@ public class ComunicacaoSocketSingle extends ComunicacaoBase {
 	                    }
 	                    Thread.sleep(100);
 					} catch (IOException | InterruptedException e) {
+						Thread.currentThread().interrupt();
 						e.printStackTrace();
 					}
 				}
