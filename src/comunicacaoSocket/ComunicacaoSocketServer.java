@@ -15,11 +15,13 @@ public class ComunicacaoSocketServer extends ComunicacaoBase {
 	private Socket clientSocket;
 	private int porta;
 	private boolean escreverEmByte;
-
-	public ComunicacaoSocketServer(ComunicacaoUI ui, int porta, boolean escreverEmByte) {
+	private boolean escreverEmUTF16;
+	
+	public ComunicacaoSocketServer(ComunicacaoUI ui, int porta, boolean escreverEmByte, boolean escreverEmUTF16) {
 		super(ui);
 		this.porta = porta;
 		this.escreverEmByte = escreverEmByte;
+		this.escreverEmUTF16 = escreverEmUTF16;
 	}
 
 	@Override
@@ -56,6 +58,9 @@ public class ComunicacaoSocketServer extends ComunicacaoBase {
 			
 			if (this.escreverEmByte) {
 				os.write(mensagem.getBytes());
+			} else if (this.escreverEmUTF16) {
+				byte[] dados = mensagem.getBytes("UTF-16LE");
+				os.write(dados);
 			} else {
 				os.writeUTF(mensagem);
 			}

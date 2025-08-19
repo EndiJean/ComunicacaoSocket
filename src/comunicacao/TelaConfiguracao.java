@@ -1,5 +1,6 @@
 package comunicacao;
 
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -30,6 +31,7 @@ public class TelaConfiguracao extends JFrame {
     private JButton botaoConectar;
     
     private JCheckBox checkEscreverEmBytes;
+    private JCheckBox checkEscreverEmUTF16;
 
     public TelaConfiguracao() {
         setTitle("Configuração de Comunicação");
@@ -57,6 +59,7 @@ public class TelaConfiguracao extends JFrame {
         botaoConectar.addActionListener(new BotaoConectarListener());
         
         checkEscreverEmBytes = new JCheckBox("Escrever em bytes");
+        checkEscreverEmUTF16 = new JCheckBox("Escrever em UTF16LE");
     }
 
     private void configurarLayout() {
@@ -72,6 +75,7 @@ public class TelaConfiguracao extends JFrame {
         gbc.gridx = 2;
         gbc.gridy = 0;
         gbc.gridwidth = 1;
+        comboTipoComunicacao.setPreferredSize(new Dimension(165, 25));
         add(comboTipoComunicacao, gbc);
 
         gbc.gridx = 0;
@@ -84,14 +88,19 @@ public class TelaConfiguracao extends JFrame {
         gbc.gridwidth = 3;
         add(painelSocket, gbc);
 
+        gbc.gridx = 2;
+        gbc.gridy = 3;
+        gbc.gridwidth = 1;
+        gbc.anchor = GridBagConstraints.EAST;
+        add(botaoConectar, gbc);
+
         gbc.gridx = 1;
         gbc.gridy = 2;
-        gbc.gridwidth = 1;
-        add(botaoConectar, gbc);
+        add(checkEscreverEmBytes, gbc);
 
         gbc.gridx = 2;
         gbc.gridy = 2;
-        add(checkEscreverEmBytes, gbc);
+        add(checkEscreverEmUTF16, gbc);
 
         alternarVisibilidadePainel();
     }
@@ -100,6 +109,7 @@ public class TelaConfiguracao extends JFrame {
         String tipoSelecionado = (String) comboTipoComunicacao.getSelectedItem();
         painelSerial.setVisible(SERIAL.equals(tipoSelecionado));
         checkEscreverEmBytes.setVisible(!SERIAL.equals(tipoSelecionado));
+        checkEscreverEmUTF16.setVisible(!SERIAL.equals(tipoSelecionado));
         painelSocket.setVisible(isSocket(tipoSelecionado));
     }
 
@@ -119,9 +129,9 @@ public class TelaConfiguracao extends JFrame {
             if (SERIAL.equals(tipoSelecionado)) {
                 painelSerial.iniciarComunicacao();
             } else if (SOCKET_SINGLE.equals(tipoSelecionado)) {
-                painelSocket.iniciarComunicacaoSingle(checkEscreverEmBytes.isSelected());
+                painelSocket.iniciarComunicacaoSingle(checkEscreverEmBytes.isSelected(), checkEscreverEmUTF16.isSelected());
             } else if (SOCKET_SERVER.equals(tipoSelecionado)) {
-            	painelSocket.iniciarComunicacaoServer(checkEscreverEmBytes.isSelected());
+            	painelSocket.iniciarComunicacaoServer(checkEscreverEmBytes.isSelected(), checkEscreverEmUTF16.isSelected());
             }
         }
     }

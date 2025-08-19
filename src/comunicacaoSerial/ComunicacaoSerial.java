@@ -2,7 +2,6 @@ package comunicacaoSerial;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
@@ -12,7 +11,7 @@ import comunicacao.ComunicacaoBase;
 import comunicacao.ComunicacaoUI;
 
 public class ComunicacaoSerial extends ComunicacaoBase {
-	
+
 	private SerialPort serialPort;
 
 	public ComunicacaoSerial(ComunicacaoUI ui, String porta, int baudRate, int dataBits, int stopBits, int parity) {
@@ -71,13 +70,9 @@ public class ComunicacaoSerial extends ComunicacaoBase {
 					if (numRead > 0) {
 						String mensagem = new String(buffer, 0, numRead, StandardCharsets.ISO_8859_1);
 						System.out.println("Mensagem recebida iso: " + mensagem);
-						
-						
-						String mensagemCorrigida = new String(
-								mensagem.getBytes(StandardCharsets.ISO_8859_1), 
-				                Charset.forName("CP850")
-				            );
-						
+
+						String mensagemCorrigida = new String(mensagem.getBytes(StandardCharsets.ISO_8859_1), Charset.forName("CP850"));
+
 						System.out.println("Mensagem corrigida: " + mensagemCorrigida);
 
 					}
@@ -86,24 +81,6 @@ public class ComunicacaoSerial extends ComunicacaoBase {
 		});
 	}
 
-	private String corrigirEncoding(byte[] buffer, int numRead) {
-	    // Decodifica primeiro como ISO-8859-1
-	    String mensagem = new String(buffer, 0, numRead, StandardCharsets.ISO_8859_1);
-	    
-	    // Se houver "¡" (0xA1 em ISO-8859-1), substitui pelo "í" do CP850
-	    if (mensagem.contains("¡")) {
-	        byte[] bufferCP850 = Arrays.copyOf(buffer, numRead);
-	        for (int i = 0; i < bufferCP850.length; i++) {
-	            if (bufferCP850[i] == (byte) 0xA1) {
-	                // Decodifica apenas o byte 0xA1 como CP850
-	                String charCorrigido = new String(new byte[]{bufferCP850[i]}, Charset.forName("CP850"));
-	                mensagem = mensagem.substring(0, i) + charCorrigido + mensagem.substring(i + 1);
-	            }
-	        }
-	    }
-	    return mensagem;
-	}
-	
 	@Override
 	public boolean estaConectado() {
 		return serialPort.isOpen();
