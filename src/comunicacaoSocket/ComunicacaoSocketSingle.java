@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 import comunicacao.ComunicacaoBase;
 import comunicacao.ComunicacaoUI;
@@ -14,12 +15,14 @@ public class ComunicacaoSocketSingle extends ComunicacaoBase {
 	private String ip;
 	private int porta;
 	private boolean escreverEmByte;
+	private boolean escreverEmUTF16;
 
-	public ComunicacaoSocketSingle(ComunicacaoUI ui, String ip, int porta, boolean escreverEmByte) {
+	public ComunicacaoSocketSingle(ComunicacaoUI ui, String ip, int porta, boolean escreverEmByte, boolean escreverEmUTF16) {
 		super(ui);
 		this.ip = ip;
 		this.porta = porta;
 		this.escreverEmByte = escreverEmByte;
+		this.escreverEmUTF16 = escreverEmUTF16;
 	}
 
 	@Override
@@ -43,6 +46,9 @@ public class ComunicacaoSocketSingle extends ComunicacaoBase {
 			
 			if (this.escreverEmByte) {
 				os.write(mensagem.getBytes());
+			} else if (this.escreverEmUTF16) {
+				byte[] dados = mensagem.getBytes(StandardCharsets.UTF_16LE);
+			    os.write(dados);
 			} else {
 				os.writeUTF(mensagem);
 			}
