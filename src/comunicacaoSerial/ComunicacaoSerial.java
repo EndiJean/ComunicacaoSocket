@@ -32,14 +32,14 @@ public class ComunicacaoSerial extends ComunicacaoBase {
 		if (!serialPort.openPort()) {
 			throw new Exception("Falha ao abrir a porta serial.");
 		}
-		ui.escreverPane("Porta serial " + serialPort.getSystemPortName() + " aberta com sucesso.", false);
+		ui.escreverMensagem("Porta serial " + serialPort.getSystemPortName() + " aberta com sucesso.");
 	}
 
 	@Override
 	public void desconectar() throws Exception {
 		if (serialPort.isOpen()) {
 			serialPort.closePort();
-			ui.escreverPane("Porta serial fechada.", false);
+			ui.escreverMensagem("Porta serial fechada.");
 		}
 	}
 

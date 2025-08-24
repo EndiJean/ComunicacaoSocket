@@ -16,6 +16,8 @@ public class ComunicacaoSocketSingle extends ComunicacaoBase {
 	private int porta;
 	private boolean escreverEmByte;
 	private boolean escreverEmUTF16;
+	
+	private volatile boolean rodando = false;
 
 	public ComunicacaoSocketSingle(ComunicacaoUI ui, String ip, int porta, boolean escreverEmByte, boolean escreverEmUTF16) {
 		super(ui);
@@ -28,15 +30,7 @@ public class ComunicacaoSocketSingle extends ComunicacaoBase {
 	@Override
 	public void conectar() throws Exception {
 		socket = new Socket(ip, porta);
-		ui.escreverPane("Conectado ao servidor " + ip + ":" + porta, false);
-	}
-
-	@Override
-	public void desconectar() throws Exception {
-		if (socket != null && !socket.isClosed()) {
-			socket.close();
-			ui.escreverPane("Conexão com o servidor fechada.", false);
-		}
+		ui.escreverMensagem("Conectado ao servidor " + ip + ":" + porta);
 	}
 
 	@Override
@@ -61,27 +55,45 @@ public class ComunicacaoSocketSingle extends ComunicacaoBase {
 
 	@Override
 	public void ler() throws Exception {
-		new Thread(() -> {
-			while (true) {
-				if (estaConectado()) {
-					try {
-						BufferedInputStream stream = new BufferedInputStream(socket.getInputStream());
-						
-						byte[] buffer = new byte[stream.available()];
-	                    int numBytes = stream.read(buffer);
-
-	                    if (numBytes > 0) {
-	                        String mensagem = new String(buffer, 0, numBytes);
-	                        ui.escreverPane("EQUIPAMENTO:" + mensagem, true);
-	                    }
-	                    Thread.sleep(100);
-					} catch (IOException | InterruptedException e) {
-						Thread.currentThread().interrupt();
-						e.printStackTrace();
-					}
-				}
+	    rodando = true;
+	    new Thread(() -> {
+	        try {
+	            BufferedInputStream stream = new BufferedInputStream(socket.getInputStream());
+	            byte[] buffer = new byte[1024];
+	            while (rodando) {
+	                int numBytes = stream.read(buffer);
+	                if (numBytes == -1) {
+	                    ui.escreverMensagem("Servidor desconectou.");
+	                    desconectar();
+	                    break;
+	                }
+	                if (numBytes > 0) {
+	                    String mensagem = new String(buffer, 0, numBytes);
+	                    ui.escreverPane("EQUIPAMENTO:" + mensagem, true);
+	                }
+	            }
+	        } catch (IOException e) {
+	            if (rodando) {
+	                ui.escreverMensagem("Conexão perdida: " + e.getMessage());
+	            }
+	            try {
+	                desconectar();
+	            } catch (Exception ex) {
+	                ex.printStackTrace();
+	            }
+	        } catch (Exception e) {
+				e.printStackTrace();
 			}
-		}).start();
+	    }).start();
+	}
+
+	@Override
+	public void desconectar() throws Exception {
+	    rodando = false;
+	    if (socket != null && !socket.isClosed()) {
+	        socket.close();
+	        ui.escreverMensagem("Conexão com o servidor fechada.");
+	    }
 	}
 
 	@Override

@@ -59,6 +59,8 @@ public class TelaConfiguracao extends JFrame {
         botaoConectar.addActionListener(new BotaoConectarListener());
         
         checkEscreverEmBytes = new JCheckBox("Escrever em bytes");
+        checkEscreverEmBytes.setSelected(true);
+
         checkEscreverEmUTF16 = new JCheckBox("Escrever em UTF16LE");
     }
 
