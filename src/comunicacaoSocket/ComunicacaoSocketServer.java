@@ -17,6 +17,8 @@ public class ComunicacaoSocketServer extends ComunicacaoBase {
 	private boolean escreverEmByte;
 	private boolean escreverEmUTF16;
 	
+	private volatile boolean rodando = false;
+	
 	public ComunicacaoSocketServer(ComunicacaoUI ui, int porta, boolean escreverEmByte, boolean escreverEmUTF16) {
 		super(ui);
 		this.porta = porta;
@@ -26,30 +28,27 @@ public class ComunicacaoSocketServer extends ComunicacaoBase {
 
 	@Override
 	public void conectar() throws Exception {
-		serverSocket = new ServerSocket(porta);
-		ui.escreverPane("Servidor iniciado na porta " + porta, false);
+	    rodando = true;
+	    serverSocket = new ServerSocket(porta);
+	    ui.escreverMensagem("Servidor iniciado na porta " + porta);
 
-		new Thread(() -> {
-			try {
-				clientSocket = serverSocket.accept();
-				ui.escreverPane("Cliente conectado: " + clientSocket.getInetAddress(), false);
-				ler();
-			} catch (Exception e) {
-				ui.escreverPane("Erro ao aceitar conexão: " + e.getMessage(), false);
+	    new Thread(() -> {
+	        try {
+	            while (rodando) {
+	                clientSocket = serverSocket.accept();
+	                ui.escreverMensagem("Cliente conectado: " + clientSocket.getInetAddress());
+	                ler();
+	            }
+	        } catch (IOException e) {
+	            if (rodando) {
+	                ui.escreverMensagem("Erro ao aceitar conexão: " + e.getMessage());
+	            }
+	        } catch (Exception e) {
+				e.printStackTrace();
 			}
-		}).start();
+	    }).start();
 	}
 
-	@Override
-	public void desconectar() throws Exception {
-		if (clientSocket != null && !clientSocket.isClosed()) {
-			clientSocket.close();
-		}
-		if (serverSocket != null && !serverSocket.isClosed()) {
-			serverSocket.close();
-		}
-		ui.escreverPane("Servidor fechado.", false);
-	}
 
 	@Override
 	public void enviar(String mensagem) throws Exception {
@@ -75,27 +74,40 @@ public class ComunicacaoSocketServer extends ComunicacaoBase {
 
 	@Override
 	public void ler() throws Exception {
-		new Thread(() -> {
-			while (true) {
-				if (estaConectado()) {
-					try {
-						BufferedInputStream stream = new BufferedInputStream(clientSocket.getInputStream());
-						
-						byte[] buffer = new byte[stream.available()];
-	                    int numBytes = stream.read(buffer);
-
-	                    if (numBytes > 0) {
-	                        String mensagem = new String(buffer, 0, numBytes);
-	                        ui.escreverPane("EQUIPAMENTO:" + mensagem, true);
-	                    }
-	                    Thread.sleep(100);
-					} catch (IOException | InterruptedException e) {
-						Thread.currentThread().interrupt();
-						e.printStackTrace();
-					}
-				}
-			}
-		}).start();
+	    new Thread(() -> {
+	        try {
+	            BufferedInputStream stream = new BufferedInputStream(clientSocket.getInputStream());
+	            byte[] buffer = new byte[1024];
+	            while (rodando && !clientSocket.isClosed()) {
+	                int numBytes = stream.read(buffer);
+	                if (numBytes == -1) {
+	                    ui.escreverMensagem("Cliente desconectado.");
+	                    clientSocket.close();
+	                    break;
+	                }
+	                if (numBytes > 0) {
+	                    String mensagem = new String(buffer, 0, numBytes);
+	                    ui.escreverPane("EQUIPAMENTO:" + mensagem, true);
+	                }
+	            }
+	        } catch (IOException e) {
+	            if (rodando) {
+	                ui.escreverMensagem("Conexão perdida: " + e.getMessage());
+	            }
+	        }
+	    }).start();
+	}
+	
+	@Override
+	public void desconectar() throws Exception {
+	    rodando = false;
+	    if (clientSocket != null && !clientSocket.isClosed()) {
+	        clientSocket.close();
+	    }
+	    if (serverSocket != null && !serverSocket.isClosed()) {
+	        serverSocket.close();
+	    }
+	    ui.escreverMensagem("Servidor fechado.");
 	}
 
 	@Override

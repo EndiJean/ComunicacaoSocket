@@ -55,7 +55,8 @@ public class ComunicacaoUI extends JFrame {
 				new BotaoComando("Query", 'Q'),
 				new BotaoComando("Resultado", 'R'), 
 				new BotaoComando("Limpar", 'L'), 
-				new BotaoComando("Copiar", 'C')
+				new BotaoComando("Copiar", 'C'),
+				new BotaoComando("🔄", 'X')
 			);
 
 		adicionaBotoes(panelBotoes, botoes);
@@ -82,7 +83,20 @@ public class ComunicacaoUI extends JFrame {
 					copiarParaClipboard(pane.getText());
 				} else if (botao.getLabel().equals("Limpar")) {
 					limparPane();
-				} else {
+				} else if (botao.getLabel().equals("🔄")) {
+				    try {
+				        if (comunicacao != null) {
+				            comunicacao.desconectar();
+				            comunicacao.conectar();
+				            if (comunicacao.estaConectado()) {
+				                comunicacao.ler();
+				            }
+				            escreverMensagem("Conexão reiniciada com sucesso.");
+				        }
+				    } catch (Exception ex) {
+				        escreverMensagem("Erro ao reiniciar: " + ex.getMessage());
+				    }
+				 } else {
 					enviarComando(String.valueOf(botao.getComando()));
 				}
 			});
@@ -95,7 +109,6 @@ public class ComunicacaoUI extends JFrame {
 	}
 
 	public void escreverPane(String mensagem, boolean pintarLetra) {
-		try {
 			StringBuilder textoConvertido = new StringBuilder();
 			for (char c : mensagem.toCharArray()) {
 				String representacao = AsciiChar.getRepresentacao(c);
@@ -106,13 +119,22 @@ public class ComunicacaoUI extends JFrame {
 				}
 			}
 
+			escreverMensagem(textoConvertido.toString(), pintarLetra);
+	}
+	
+	public void escreverMensagem(String mensagem) {
+		escreverMensagem(mensagem, false);
+	}
+	
+	private void escreverMensagem(String mensagem, boolean pintarLetra) {
+		try {
 			StyledDocument doc = pane.getStyledDocument();
 			SimpleAttributeSet attrs = new SimpleAttributeSet();
 			if (pintarLetra) {
 				StyleConstants.setForeground(attrs, Color.RED);
 			}
 
-			doc.insertString(doc.getLength(), textoConvertido.toString() + "\n", attrs);
+			doc.insertString(doc.getLength(), mensagem + "\n", attrs);
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		}
