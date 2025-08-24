@@ -56,7 +56,8 @@ public class ComunicacaoUI extends JFrame {
 				new BotaoComando("Resultado", 'R'), 
 				new BotaoComando("Limpar", 'L'), 
 				new BotaoComando("Copiar", 'C'),
-				new BotaoComando("🔄", 'X')
+				new BotaoComando("🔄", 'X'),
+				new BotaoComando("📑", 'C')
 			);
 
 		adicionaBotoes(panelBotoes, botoes);
@@ -84,23 +85,32 @@ public class ComunicacaoUI extends JFrame {
 				} else if (botao.getLabel().equals("Limpar")) {
 					limparPane();
 				} else if (botao.getLabel().equals("🔄")) {
-				    try {
-				        if (comunicacao != null) {
-				            comunicacao.desconectar();
-				            comunicacao.conectar();
-				            if (comunicacao.estaConectado()) {
-				                comunicacao.ler();
-				            }
-				            escreverMensagem("Conexão reiniciada com sucesso.");
-				        }
-				    } catch (Exception ex) {
-				        escreverMensagem("Erro ao reiniciar: " + ex.getMessage());
-				    }
-				 } else {
+				    reconectar();
+				} else if (botao.getLabel().equals("📑")) {
+					MensagemQuebradaDialog dialog = new MensagemQuebradaDialog(this, msg -> {
+						enviarComando(msg); 
+				    });
+				    dialog.setVisible(true);
+				} else {
 					enviarComando(String.valueOf(botao.getComando()));
 				}
 			});
 			panelBotoes.add(button);
+		}
+	}
+
+	private void reconectar() {
+		try {
+		    if (comunicacao != null) {
+		        comunicacao.desconectar();
+		        comunicacao.conectar();
+		        if (comunicacao.estaConectado()) {
+		            comunicacao.ler();
+		        }
+		        escreverMensagem("Conexão reiniciada com sucesso.");
+		    }
+		} catch (Exception ex) {
+		    escreverMensagem("Erro ao reiniciar: " + ex.getMessage());
 		}
 	}
 	
