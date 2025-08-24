@@ -55,7 +55,8 @@ public class ComunicacaoUI extends JFrame {
 				new BotaoComando("Query", 'Q'),
 				new BotaoComando("Resultado", 'R'), 
 				new BotaoComando("Limpar", 'L'), 
-				new BotaoComando("Copiar", 'C')
+				new BotaoComando("Copiar", 'C'),
+				new BotaoComando("📑", 'C')
 			);
 
 		adicionaBotoes(panelBotoes, botoes);
@@ -82,6 +83,11 @@ public class ComunicacaoUI extends JFrame {
 					copiarParaClipboard(pane.getText());
 				} else if (botao.getLabel().equals("Limpar")) {
 					limparPane();
+				} else if (botao.getLabel().equals("📑")) {
+					MensagemQuebradaDialog dialog = new MensagemQuebradaDialog(this, msg -> {
+						enviarComando(msg); 
+				    });
+				    dialog.setVisible(true);
 				} else {
 					enviarComando(String.valueOf(botao.getComando()));
 				}
