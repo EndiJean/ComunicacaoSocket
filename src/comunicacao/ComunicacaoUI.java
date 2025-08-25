@@ -56,10 +56,10 @@ public class ComunicacaoUI extends JFrame {
 				new BotaoComando("Resultado", 'R'), 
 				new BotaoComando("Limpar", 'L'), 
 				new BotaoComando("Copiar", 'C'),
-				new BotaoComando("🔄", 'X'),
-				new BotaoComando("📑", 'C')
+				new BotaoComando("📑", 'C'),
+				new BotaoComando("🔄", 'X')
 			);
-
+		
 		adicionaBotoes(panelBotoes, botoes);
 
 		this.add(scrollPane, BorderLayout.CENTER);
