@@ -24,6 +24,9 @@ import javax.swing.text.StyledDocument;
 
 public class ComunicacaoUI extends JFrame {
 	
+	private static final String QUERY = "Query";
+	private static final String RESULTADO = "Resultado";
+
 	private JTextPane pane;
 	
 	private transient Comunicacao comunicacao;
@@ -52,8 +55,8 @@ public class ComunicacaoUI extends JFrame {
 				new BotaoComando("STX", (char) 2),
 				new BotaoComando("ETX", (char) 3), 
 				new BotaoComando("EOT", (char) 4), 
-				new BotaoComando("Query", 'Q'),
-				new BotaoComando("Resultado", 'R'), 
+				new BotaoComando(QUERY, 'Q'),
+				new BotaoComando(RESULTADO, 'R'), 
 				new BotaoComando("Limpar", 'L'), 
 				new BotaoComando("Copiar", 'C'),
 				new BotaoComando("📑", 'C'),
@@ -70,16 +73,8 @@ public class ComunicacaoUI extends JFrame {
 		for (BotaoComando botao : botoes) {
 			JButton button = new JButton(botao.getLabel());
 			button.addActionListener(e -> {
-				if (botao.getLabel().equals("Query")) {
-					if (mensagemQuery == null) {
-						mensagemQuery = new Mensagem(ComunicacaoUI.this, botao.getLabel());
-					}
-					mensagemQuery.setVisible(true);
-				} else if (botao.getLabel().equals("Resultado")) {
-					if (mensagemResultado == null) {
-						mensagemResultado = new Mensagem(ComunicacaoUI.this, botao.getLabel());
-					}
-					mensagemResultado.setVisible(true);
+				if (botao.getLabel().equals(QUERY) || botao.getLabel().equals(RESULTADO)) {
+					enviaMensagem(botao);
 				} else if (botao.getLabel().equals("Copiar")) {
 					copiarParaClipboard(pane.getText());
 				} else if (botao.getLabel().equals("Limpar")) {
@@ -87,15 +82,27 @@ public class ComunicacaoUI extends JFrame {
 				} else if (botao.getLabel().equals("🔄")) {
 				    reconectar();
 				} else if (botao.getLabel().equals("📑")) {
-					MensagemQuebradaDialog dialog = new MensagemQuebradaDialog(this, msg -> {
-						enviarComando(msg); 
-				    });
+					MensagemQuebradaDialog dialog = new MensagemQuebradaDialog(this, this::enviarComando);
 				    dialog.setVisible(true);
 				} else {
 					enviarComando(String.valueOf(botao.getComando()));
 				}
 			});
 			panelBotoes.add(button);
+		}
+	}
+
+	private void enviaMensagem(BotaoComando botao) {
+		if (botao.getLabel().equals(QUERY)) {
+			if (mensagemQuery == null) {
+				mensagemQuery = new Mensagem(ComunicacaoUI.this);
+			}
+			mensagemQuery.setVisible(true);
+		} else if (botao.getLabel().equals(RESULTADO)) {
+			if (mensagemResultado == null) {
+				mensagemResultado = new Mensagem(ComunicacaoUI.this);
+			}
+			mensagemResultado.setVisible(true);
 		}
 	}
 
