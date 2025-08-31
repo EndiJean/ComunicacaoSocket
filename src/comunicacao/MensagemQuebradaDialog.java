@@ -11,6 +11,7 @@ public class MensagemQuebradaDialog extends JDialog {
     private JTextArea txtMensagem;
     private JTextField txtDelimitador;
     private JPanel panelMensagens;
+    private JCheckBox checkQuebrarLinha;
     private List<String> partes = new ArrayList<>();
 
     public interface EnviarCallback {
@@ -23,7 +24,6 @@ public class MensagemQuebradaDialog extends JDialog {
         setLocationRelativeTo(owner);
         setLayout(new BorderLayout());
 
-        // Painel superior
         JPanel topo = new JPanel(new BorderLayout());
         txtMensagem = new JTextArea(6, 40);
         topo.add(new JScrollPane(txtMensagem), BorderLayout.CENTER);
@@ -33,6 +33,12 @@ public class MensagemQuebradaDialog extends JDialog {
         txtDelimitador = new JTextField("[CR]", 10);
         setAlturaFixa(txtDelimitador, 20);
         delimitadorPanel.add(txtDelimitador);
+        
+        checkQuebrarLinha = new JCheckBox("Quebrar por linhas");
+        delimitadorPanel.add(checkQuebrarLinha);
+        checkQuebrarLinha.addActionListener(e -> {
+            txtDelimitador.setEnabled(!checkQuebrarLinha.isSelected());
+        });
 
         JButton btnQuebrar = new JButton("Quebrar");
         setAlturaFixa(btnQuebrar, 20);
@@ -53,19 +59,39 @@ public class MensagemQuebradaDialog extends JDialog {
         partes.clear();
 
         String texto = txtMensagem.getText();
-        String delimitador = txtDelimitador.getText();
 
-        if (texto.isEmpty() || delimitador.isEmpty()) {
+        if (texto.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Preencha a mensagem e o delimitador!");
             return;
         }
 
-        String[] split = texto.split(Pattern.quote(delimitador));
-        for (int i = 0; i < split.length; i++) {
-            String parte = split[i].trim();
-			if (!parte.isEmpty()) {
-				partes.add(parte + delimitador);
-			}
+        String[] split;
+        String delimitador = txtDelimitador.getText();
+
+        if (checkQuebrarLinha.isSelected()) {
+            split = texto.split("\\r?\\n");
+            for (String parte : split) {
+                parte = parte.trim();
+                if (!parte.isEmpty()) {
+                    partes.add(parte);
+                }
+            }
+        } else {
+            if (delimitador.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Informe o delimitador!");
+                return;
+            }
+            split = texto.split(Pattern.quote(delimitador));
+            for (int i = 0; i < split.length; i++) {
+                String parte = split[i].trim();
+                if (!parte.isEmpty()) {
+                    if (i == split.length - 1 && !texto.endsWith(parte + delimitador)) {
+                        partes.add(parte);
+                    } else {
+                        partes.add(parte + delimitador);
+                    }
+                }
+            }
         }
 
         GridBagConstraints gbc = new GridBagConstraints();

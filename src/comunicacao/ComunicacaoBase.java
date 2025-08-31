@@ -5,7 +5,7 @@ public abstract class ComunicacaoBase implements Comunicacao {
 	protected ComunicacaoUI ui;
 	protected StringBuilder bufferAcumulador = new StringBuilder();
 
-    public ComunicacaoBase(ComunicacaoUI ui) {
+    protected ComunicacaoBase(ComunicacaoUI ui) {
         this.ui = ui;
     }
 }
