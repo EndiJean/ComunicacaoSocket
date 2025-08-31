@@ -56,6 +56,7 @@ public class ComunicacaoUI extends JFrame {
 				new BotaoComando("Resultado", 'R'), 
 				new BotaoComando("Limpar", 'L'), 
 				new BotaoComando("Copiar", 'C'),
+				new BotaoComando("📑", 'C'),
 				new BotaoComando("🔄", 'X')
 			);
 
@@ -83,6 +84,7 @@ public class ComunicacaoUI extends JFrame {
 					copiarParaClipboard(pane.getText());
 				} else if (botao.getLabel().equals("Limpar")) {
 					limparPane();
+<<<<<<< HEAD
 				} else if (botao.getLabel().equals("🔄")) {
 				    try {
 				        if (comunicacao != null) {
@@ -97,6 +99,14 @@ public class ComunicacaoUI extends JFrame {
 				        escreverMensagem("Erro ao reiniciar: " + ex.getMessage());
 				    }
 				 } else {
+=======
+				} else if (botao.getLabel().equals("📑")) {
+					MensagemQuebradaDialog dialog = new MensagemQuebradaDialog(this, msg -> {
+						enviarComando(msg); 
+				    });
+				    dialog.setVisible(true);
+				} else {
+>>>>>>> origin/historia_003
 					enviarComando(String.valueOf(botao.getComando()));
 				}
 			});
