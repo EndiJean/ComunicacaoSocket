@@ -29,24 +29,24 @@ public class PainelSerial extends JPanel {
             nomesPortas[i] = portasDisponiveis[i].getSystemPortName();
         }
         comboPortas = new JComboBox<>(nomesPortas);
-        comboPortas.setPreferredSize(new Dimension(200, 25));
+        comboPortas.setPreferredSize(new Dimension(200, 20));
 
         Integer[] baudRates = {9600, 19200, 38400, 57600, 115200};
         comboBaudRate = new JComboBox<>(baudRates);
-        comboBaudRate.setPreferredSize(new Dimension(200, 25));
+        comboBaudRate.setPreferredSize(new Dimension(200, 20));
 
         Integer[] dataBitsOptions = {5, 6, 7, 8};
         comboDataBits = new JComboBox<>(dataBitsOptions);
         comboDataBits.setSelectedIndex(dataBitsOptions.length - 1);
-        comboDataBits.setPreferredSize(new Dimension(200, 25));
+        comboDataBits.setPreferredSize(new Dimension(200, 20));
 
         Integer[] stopBitsOptions = {1, 2};
         comboStopBits = new JComboBox<>(stopBitsOptions);
-        comboStopBits.setPreferredSize(new Dimension(200, 25));
+        comboStopBits.setPreferredSize(new Dimension(200, 20));
 
         String[] parityOptions = {"Nenhuma", "Ímpar", "Par", "Marcada", "Espaçada"};
         comboParity = new JComboBox<>(parityOptions);
-        comboParity.setPreferredSize(new Dimension(200, 25));
+        comboParity.setPreferredSize(new Dimension(200, 20));
     }
 
     private void configurarLayout() {

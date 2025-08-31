@@ -48,7 +48,7 @@ public class TelaConfiguracao extends JFrame {
     }
 
     private void inicializarComponentes() {
-        String[] tiposComunicacao = {SERIAL, SOCKET_SERVER, SOCKET_SINGLE};
+        String[] tiposComunicacao = {SOCKET_SERVER, SOCKET_SINGLE, SERIAL};
         comboTipoComunicacao = new JComboBox<>(tiposComunicacao);
         comboTipoComunicacao.addActionListener(new ComboTipoComunicacaoListener());
 
@@ -77,7 +77,7 @@ public class TelaConfiguracao extends JFrame {
         gbc.gridx = 2;
         gbc.gridy = 0;
         gbc.gridwidth = 1;
-        comboTipoComunicacao.setPreferredSize(new Dimension(165, 25));
+        comboTipoComunicacao.setPreferredSize(new Dimension(165, 20));
         add(comboTipoComunicacao, gbc);
 
         gbc.gridx = 0;
