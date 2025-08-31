@@ -56,6 +56,7 @@ public class ComunicacaoUI extends JFrame {
 				new BotaoComando("Resultado", 'R'), 
 				new BotaoComando("Limpar", 'L'), 
 				new BotaoComando("Copiar", 'C'),
+				new BotaoComando("📑", 'C'),
 				new BotaoComando("🔄", 'X')
 			);
 
@@ -96,7 +97,12 @@ public class ComunicacaoUI extends JFrame {
 				    } catch (Exception ex) {
 				        escreverMensagem("Erro ao reiniciar: " + ex.getMessage());
 				    }
-				 } else {
+				} else if (botao.getLabel().equals("📑")) {
+					MensagemQuebradaDialog dialog = new MensagemQuebradaDialog(this, msg -> {
+						enviarComando(msg); 
+				    });
+				    dialog.setVisible(true);
+				} else {
 					enviarComando(String.valueOf(botao.getComando()));
 				}
 			});
