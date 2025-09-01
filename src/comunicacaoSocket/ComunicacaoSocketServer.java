@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 import comunicacao.ComunicacaoBase;
 import comunicacao.ComunicacaoUI;
@@ -58,7 +59,7 @@ public class ComunicacaoSocketServer extends ComunicacaoBase {
 			if (this.escreverEmByte) {
 				os.write(mensagem.getBytes());
 			} else if (this.escreverEmUTF16) {
-				byte[] dados = mensagem.getBytes("UTF-16LE");
+				byte[] dados = mensagem.getBytes(StandardCharsets.UTF_16LE);
 				os.write(dados);
 			} else {
 				os.writeUTF(mensagem);
