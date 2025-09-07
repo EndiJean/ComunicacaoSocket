@@ -116,14 +116,23 @@ public class ComunicacaoUI extends JFrame {
 
 	public void escreverPane(String mensagem, boolean pintarLetra) {
 			StringBuilder textoConvertido = new StringBuilder();
-			for (char c : mensagem.toCharArray()) {
-				String representacao = AsciiChar.getRepresentacao(c);
-				if (representacao != null) {
-					textoConvertido.append(representacao);
-				} else {
-					textoConvertido.append(c);
-				}
-			}
+			char[] chars = mensagem.toCharArray();
+	        for (int i = 0; i < chars.length; i++) {
+	            char c = chars[i];
+
+	            if (c == 13 && (i + 1 < chars.length && chars[i + 1] == 10)) {
+	                textoConvertido.append("[LINE]");
+	                i++;
+	                continue;
+	            }
+
+	            String representacao = AsciiChar.getRepresentacao(c);
+	            if (representacao != null) {
+	                textoConvertido.append(representacao);
+	            } else {
+	                textoConvertido.append(c);
+	            }
+	        }
 
 			escreverMensagem(textoConvertido.toString(), pintarLetra);
 	}
@@ -160,9 +169,7 @@ public class ComunicacaoUI extends JFrame {
 	
 	public void enviarComando(String comando) {
 		try {
-			System.out.println("-" + comando + "-");
 			String converterRepresentacaoParaCodigo = converterRepresentacaoParaCodigo(comando);
-			System.out.println("-" + converterRepresentacaoParaCodigo + "-");
 			comunicacao.enviar(converterRepresentacaoParaCodigo);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -183,6 +190,9 @@ public class ComunicacaoUI extends JFrame {
 					Integer codigo = AsciiChar.getCode(representacao);
 					if (codigo != null) {
 						mensagemConvertida.append((char) codigo.intValue());
+					} else if (representacao.equalsIgnoreCase("[LINE]")) {
+						mensagemConvertida.append((char) AsciiChar.getCode("[CR]").intValue());
+						mensagemConvertida.append((char) AsciiChar.getCode("[LF]").intValue());
 					} else {
 						mensagemConvertida.append(mensagem.substring(i, fechamento + 1));
 					}
