@@ -19,12 +19,12 @@ public class Mensagem extends JFrame {
 	ComunicacaoUI ui;
 	private String mensagem;
 	
-    public Mensagem(ComunicacaoUI ui, String tipoComando) {
+    public Mensagem(ComunicacaoUI ui) {
     	this.ui = ui;
-        abrirTelaMensagem(tipoComando);
+        abrirTelaMensagem();
     }
 
-    private void abrirTelaMensagem(String tipoComando) {
+    private void abrirTelaMensagem() {
         this.setSize(400, 300);
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         this.setLocationRelativeTo(ui);

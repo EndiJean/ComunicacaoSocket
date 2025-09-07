@@ -26,12 +26,12 @@ public class PainelSocket extends JPanel {
 
     private void inicializarComponentes() {
         campoSocketIp = new JTextField("127.0.0.1");
-        campoSocketIp.setPreferredSize(new Dimension(200, 25));
-        campoSocketIp.setMinimumSize(new Dimension(200, 25));
+        campoSocketIp.setPreferredSize(new Dimension(200, 20));
+        campoSocketIp.setMinimumSize(new Dimension(200, 20));
 
         campoSocketPorta = new JTextField("5001");
-        campoSocketPorta.setPreferredSize(new Dimension(200, 25));
-        campoSocketPorta.setMinimumSize(new Dimension(200, 25));
+        campoSocketPorta.setPreferredSize(new Dimension(200, 20));
+        campoSocketPorta.setMinimumSize(new Dimension(200, 20));
     }
 
     private void configurarLayout() {
