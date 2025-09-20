@@ -1,6 +1,5 @@
 package comunicacaoSerial;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import com.fazecast.jSerialComm.SerialPort;
@@ -65,22 +64,23 @@ public class ComunicacaoSerial extends ComunicacaoBase {
 			@Override
 			public void serialEvent(SerialPortEvent event) {
 				if (event.getEventType() == SerialPort.LISTENING_EVENT_DATA_AVAILABLE) {
-					byte[] buffer = new byte[serialPort.bytesAvailable()];
-					int numRead = serialPort.readBytes(buffer, buffer.length);
-					if (numRead > 0) {
-						String mensagem = new String(buffer, 0, numRead, StandardCharsets.ISO_8859_1);
-						System.out.println("Mensagem recebida iso: " + mensagem);
-
-						String mensagemCorrigida = new String(mensagem.getBytes(StandardCharsets.ISO_8859_1), Charset.forName("CP850"));
-
-						System.out.println("Mensagem corrigida: " + mensagemCorrigida);
-
+					int numBytes = 0;
+					byte[] readBuffer = new byte[1024];
+				    String tempString = "";
+					while (serialPort.bytesAvailable() > 0) {
+						numBytes = serialPort.readBytes(readBuffer, readBuffer.length);
+			  			if (numBytes > 0) {
+			  				tempString = new String(readBuffer, 0, numBytes, StandardCharsets.ISO_8859_1);
+			  			}
 					}
+					
+					ui.escreverPane("EQUIPAMENTO:" + tempString, true);
+					ui.dispararEvento(ui.converteAsciiParaString(tempString));
 				}
 			}
 		});
 	}
-
+	
 	@Override
 	public boolean estaConectado() {
 		return serialPort.isOpen();

@@ -33,6 +33,8 @@ public class ComunicacaoUI extends JFrame {
 	
 	private Mensagem mensagemQuery;
 	private Mensagem mensagemResultado;
+	
+	private MensagemQuebradaDialog dialog;
 
 	public ComunicacaoUI(String titulo) {
 		setTitle(titulo);
@@ -82,7 +84,12 @@ public class ComunicacaoUI extends JFrame {
 				} else if (botao.getLabel().equals("🔄")) {
 				    reconectar();
 				} else if (botao.getLabel().equals("📑")) {
-					MensagemQuebradaDialog dialog = new MensagemQuebradaDialog(this, this::enviarComando);
+					if (dialog != null && dialog.isVisible()) {
+						return;
+					}
+					if (dialog == null) {
+						dialog = new MensagemQuebradaDialog(this, this::enviarComando);
+					}
 				    dialog.setVisible(true);
 				} else {
 					enviarComando(String.valueOf(botao.getComando()));
@@ -126,26 +133,29 @@ public class ComunicacaoUI extends JFrame {
 	}
 
 	public void escreverPane(String mensagem, boolean pintarLetra) {
-			StringBuilder textoConvertido = new StringBuilder();
-			char[] chars = mensagem.toCharArray();
-	        for (int i = 0; i < chars.length; i++) {
-	            char c = chars[i];
+		escreverMensagem(converteAsciiParaString(mensagem), pintarLetra);
+	}
 
-	            if (c == 13 && (i + 1 < chars.length && chars[i + 1] == 10)) {
-	                textoConvertido.append("[LINE]");
-	                i++;
-	                continue;
-	            }
+	public String converteAsciiParaString(String mensagem) {
+		StringBuilder textoConvertido = new StringBuilder();
+		char[] chars = mensagem.toCharArray();
+		for (int i = 0; i < chars.length; i++) {
+		    char c = chars[i];
 
-	            String representacao = AsciiChar.getRepresentacao(c);
-	            if (representacao != null) {
-	                textoConvertido.append(representacao);
-	            } else {
-	                textoConvertido.append(c);
-	            }
-	        }
+		    if (c == 13 && (i + 1 < chars.length && chars[i + 1] == 10)) {
+		        textoConvertido.append("[LINE]");
+		        i++;
+		        continue;
+		    }
 
-			escreverMensagem(textoConvertido.toString(), pintarLetra);
+		    String representacao = AsciiChar.getRepresentacao(c);
+		    if (representacao != null) {
+		        textoConvertido.append(representacao);
+		    } else {
+		        textoConvertido.append(c);
+		    }
+		}
+		return textoConvertido.toString();
 	}
 	
 	public void escreverMensagem(String mensagem) {
@@ -228,6 +238,12 @@ public class ComunicacaoUI extends JFrame {
 			}
 		} catch (Exception e) {
 			escreverPane("Erro - " + e.getMessage());
+		}
+	}
+
+	public void dispararEvento(String mensagem) {
+		if (dialog != null) {
+			dialog.notificarEvento(mensagem, this::enviarComando);
 		}
 	}
 }

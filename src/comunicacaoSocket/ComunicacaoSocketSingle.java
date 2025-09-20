@@ -70,6 +70,7 @@ public class ComunicacaoSocketSingle extends ComunicacaoBase {
 	                if (numBytes > 0) {
 	                    String mensagem = new String(buffer, 0, numBytes);
 	                    ui.escreverPane("EQUIPAMENTO:" + mensagem, true);
+	                    ui.dispararEvento(ui.converteAsciiParaString(mensagem));
 	                }
 	            }
 	        } catch (IOException e) {
