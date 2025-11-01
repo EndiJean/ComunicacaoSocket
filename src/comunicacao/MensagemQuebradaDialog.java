@@ -65,7 +65,7 @@ public class MensagemQuebradaDialog extends JDialog {
     }
 
     public MensagemQuebradaDialog(Frame owner, EnviarCallback callback) {
-        super(owner, "Enviar Mensagens", true);
+        super(owner, "Enviar Mensagens", false);
         setSize(700, 600);
         setLocationRelativeTo(owner);
         setLayout(new BorderLayout());
